@@ -13,7 +13,7 @@ namespace Quiz.ViewModels.BaseClass
         public event PropertyChangedEventHandler PropertyChanged;
 
         //metoda zgłaszjąca zmiany w własościach podanych jako argumenty
-        protected void onPropertyChanged(params string[] namesOfProperties)
+        protected void OnPropertyChanged(params string[] namesOfProperties)
         {
             //jeśli ktoś obserwuje zdarzenie PropertyChanged
             if (PropertyChanged != null)

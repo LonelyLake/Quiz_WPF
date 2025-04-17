@@ -23,7 +23,6 @@ namespace Quiz.Views
         public QuizGeneratorControl()
         {
             InitializeComponent();
-            this.DataContext = this;
         }
     }
 }

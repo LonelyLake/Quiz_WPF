@@ -5,24 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Quiz.Views"
         xmlns:vm="clr-namespace:Quiz.ViewModels"
-        xmlns:local="clr-namespace:Quiz"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type vm:HomeViewModel}">
-            <views:MyHomeView />
+        <DataTemplate DataType="{x:Type vm:QuizGeneratorViewModel}">
+            <views:QuizGeneratorControl />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:SecondViewModel}">
-            <views:SecondView />
+        <DataTemplate DataType="{x:Type vm:QuizSolverViewModel}">
+            <views:QuizSolverControl/>
         </DataTemplate>
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Button Content="Przełącz widok" Click="SwitchView_Click" Width="150" Margin="10"/>
-        <uc:QuizGeneratorControl x:Name="generatorControl" Visibility="Visible"/>
-        <uc:QuizSolverControl x:Name="solverControl" Visibility="Collapsed"/>
-    </Grid>
+    <DockPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5"
+                HorizontalAlignment="Center">
+            <Button Content="Strona główna" Foreground="White" Background="DarkBlue"
+                Command="{Binding NavigateQuizGeneratorCommand}" Margin="5"
+                Padding="10"/>
+            <Button Content="Drugi widok"  Foreground="White" Background="DarkGreen"
+                Command="{Binding NavigateQuizSolverCommand}" Margin="5"
+                Padding="10"/>
+        </StackPanel>
+
+        <!--Dynamiczne ładowanie widoku na podstawie modelu widoku
+    ContentControl.Content będzie powiązany z właściwością CurrentViewModel 
+    w obiekcie, który jest aktualnym DataContext
+    To działa razem z tzw. DataTemplate-->
+
+        <ContentControl Content="{Binding CurrentViewModel}" Margin="10"/>
+    </DockPanel>
 </Window>

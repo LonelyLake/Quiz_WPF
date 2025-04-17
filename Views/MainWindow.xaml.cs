@@ -16,18 +16,9 @@ namespace Quiz.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private bool showingGenerator = true;
 
     public MainWindow()
     {
         InitializeComponent();
-    }
-
-    private void SwitchView_Click(object sender, RoutedEventArgs e)
-    {
-        showingGenerator = !showingGenerator;
-
-        generatorControl.Visibility = showingGenerator ? Visibility.Visible : Visibility.Collapsed;
-        solverControl.Visibility = showingGenerator ? Visibility.Collapsed : Visibility.Visible;
     }
 }
