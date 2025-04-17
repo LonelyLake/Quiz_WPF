@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace CalculatorMVVM.VIewModel.BaseClass
+namespace Quiz.ViewModels.BaseClass
 {
     //tworzymy klasę uniwesalną określającą czym jest dowolne polecenie, gdzie 
     //zachowanie tego polecenia wstrzykujemy poprzez metody będące argumentami konstruktora

@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CalculatorMVVM.VIewModel.BaseClass
+namespace Quiz.ViewModels.BaseClass
 {
-    class ViewModelBase : INotifyPropertyChanged
+    public class ViewModelBase : INotifyPropertyChanged
     {
         //zdarzenie informujące o zmiane własności w obiekcie ViewModelu
         public event PropertyChangedEventHandler PropertyChanged;
 
         //metoda zgłaszjąca zmiany w własościach podanych jako argumenty
-        protected void onPropertyChanged(params string[] namesOfProperties)
+        protected void OnPropertyChanged(params string[] namesOfProperties)
         {
             //jeśli ktoś obserwuje zdarzenie PropertyChanged
             if (PropertyChanged != null)
