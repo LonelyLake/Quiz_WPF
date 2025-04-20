@@ -7,19 +7,64 @@ using System.Threading.Tasks;
 
 namespace Quiz.ViewModels
 {
+    using Quiz.Model;
+    using System.Collections;
+    using System.Windows;
+    using System.Windows.Input;
+
     public class QuizGeneratorViewModel : ViewModelBase
     {
-        public string WelcomeMessage => "Witamy w aplikacji!";
-
-        private int _fontSize;
-        public int FontSize
+        private string quizTitle = "";
+        public string QuizTitle
         {
-            get => _fontSize;
+            get => quizTitle;
             set
             {
-                _fontSize = value;
-                OnPropertyChanged("FontSize");
+                quizTitle = value;
+                OnPropertyChanged(nameof(QuizTitle));
             }
         }
+
+        private Quiz quiz = null;
+        public Quiz Quiz
+        {
+            get => quiz;
+            set
+            {
+                quiz = value;
+                OnPropertyChanged(nameof(Quiz));
+            }
+        }
+
+        private bool isQuizCreated = false;
+        public bool IsQuizCreated
+        {
+            get => isQuizCreated;
+            set
+            {
+                isQuizCreated = value;
+                OnPropertyChanged(nameof(IsQuizCreated));
+            }
+        }
+
+        private ICommand createQuizCommand;
+        public ICommand CreateQuizCommand => (createQuizCommand ?? (createQuizCommand = new RelayCommand(
+            p =>
+            {
+                if (quiz != null)
+                {
+                    MessageBox.Show("Quiz already created.");
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(quizTitle))
+                {
+                    MessageBox.Show("Quiz title cannot be empty.");
+                    return;
+                }
+                quiz = new Quiz(quizTitle);
+                IsQuizCreated = true;
+            },
+            p => true
+        )));
     }
 }

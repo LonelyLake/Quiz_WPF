@@ -6,7 +6,21 @@ using System.Threading.Tasks;
 
 namespace Quiz.Model
 {
-    class Quiz
+    public class Quiz
     {
+        private string title;
+        public string Title
+        {
+            get { return title; }
+            set
+            {
+                title = value;
+                // NotifyPropertyChanged(nameof(Title));
+            }
+        }
+        public Quiz(string title)
+        {
+            this.Title = title;
+        }
     }
 }
