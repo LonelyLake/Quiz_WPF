@@ -29,8 +29,8 @@
 
                 <StackPanel IsEnabled="{Binding IsQuizCreated}">
                 <Label Content="Enter a question:"/>
-                <TextBox Width="300"/>
-                <Button Content="Add Question"/>
+                    <TextBox Width="300" Text="{Binding CurrentQuestionText, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Content="Add Question" Command="{Binding AddQuestionCommand}"/>
             
                 <StackPanel Orientation="Horizontal"  Margin="0 10 0 0">
                     <Label Content="Question Type:" Margin="0 0 20 0"/>
@@ -40,15 +40,15 @@
                 </ComboBox>
                 </StackPanel>
                 <Separator Margin="0 30 0 30" />
-                    <DockPanel>
+                    <DockPanel IsEnabled="{Binding IsQuestionAdded}">
                         <StackPanel DockPanel.Dock="Left" Name="Answers" Orientation="Vertical">
                             <Label Content="Answers:"/>
-                            <TextBox Width="200"/>
-                            <TextBox Width="200"/>
-                            <TextBox Width="200"/>
-                            <TextBox Width="200"/>
-                            <Button Content="Add answers" Margin="10 20 0 20"/>
-                            </StackPanel>
+                            <TextBox Width="200" Text="{Binding CurrentAnswersTexts[0], UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="200" Text="{Binding CurrentAnswersTexts[1], UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="200" Text="{Binding CurrentAnswersTexts[2], UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="200" Text="{Binding CurrentAnswersTexts[3], UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Content="Add answers" Margin="10 20 0 20" Command="{Binding AddAnswersCommand}"/>
+                        </StackPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="30 0 0 0">
                             <Label Content="Correct Answer:"/>
                             <RadioButton Content="Answer 1"/>
@@ -65,18 +65,36 @@
                 <TextBlock Text="Quiz Preview" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <TextBlock Text="Preview of the quiz will be displayed here."/>
                 <StackPanel Orientation="Horizontal" Margin="10">
-                    <TextBlock Text="Quiz Title:" FontWeight="Bold" Margin="5 10 5 5"/>
+                    <TextBlock Text="Quiz Title:" FontWeight="Bold" Margin="0 10 5 5"/>
                     <TextBlock Text="{Binding QuizTitle}" Margin="10"/>
                 </StackPanel>
-                <TextBlock Text="Questions:" FontWeight="Bold" Margin="5 10 5 5"/>
-                <ListBox Width="450" Height="200" Margin="10"/>
+                <TextBlock Text="Questions:" FontWeight="Bold" Margin="10 10 5 5"/>
+                <ListBox Width="450" Height="200" Margin="10" ItemsSource="{Binding Questions}" SelectedItem="{Binding CurrentQuestion}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5">
+                                <TextBlock FontSize="18" Text="{Binding Path=QuestionText}" />
+                                <StackPanel Orientation="Vertical" Margin="10 0 0 0">
+                                    <TextBlock Text="Answers:" FontWeight="Bold"/>
+                                    <ItemsControl ItemsSource="{Binding Answers}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding AnswerText}" Margin="5"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
                 <StackPanel Orientation="Horizontal" Margin="10">
                     <Button Content="Save Quiz"/>
                     <Button Content="Load Quiz"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="0 200 10 0">
-                <Button Content="Remove"/>
+                <Button Content="Remove"/> 
                 <Button Content="Modify"/>
             </StackPanel>
         </DockPanel>
