@@ -87,6 +87,42 @@ namespace Quiz.ViewModels
             }
         }
 
+        private QuestionType selectedQuestionType;
+        public QuestionType SelectedQuestionType
+        {
+            get => selectedQuestionType;
+            set
+            {
+                selectedQuestionType = value;
+                OnPropertyChanged(nameof(SelectedQuestionType));
+            }
+        }
+
+        public string[] QuestionTypes => Enum.GetNames(typeof(QuestionType));
+        public string SelectedQuestionTypeString
+        {
+            get => selectedQuestionType.ToString();
+            set
+            {
+                if (Enum.TryParse(value, out QuestionType parsedType))
+                {
+                    SelectedQuestionType = parsedType;
+                    OnPropertyChanged(nameof(SelectedQuestionType));
+                }
+            }
+        }
+
+        private bool[] correctAnswers = new bool[4];
+        public bool[] CorrectAnswers
+        {
+            get => correctAnswers;
+            set
+            {
+                correctAnswers = value;
+                OnPropertyChanged(nameof(CorrectAnswers));
+            }
+        }
+
         private string[] currentAnswersTexts = new string[4];
         public string[] CurrentAnswersTexts
         {
@@ -139,6 +175,24 @@ namespace Quiz.ViewModels
                 CurrentQuestionText = ""; // очистить поле
                 CurrentQuestion = newQuestion;
                 IsQuestionAdded = true;
+
+                
+
+                if (SelectedQuestionType == QuestionType.SingleChoice)
+                {
+                    newQuestion.Type = QuestionType.SingleChoice;
+                    MessageBox.Show("Single choice question added.");
+                }
+                else if (SelectedQuestionType == QuestionType.MultipleChoice)
+                {
+                    newQuestion.Type = QuestionType.MultipleChoice;
+                    MessageBox.Show("Multiple choice question added.");
+                }
+                else
+                {
+                    MessageBox.Show("Invalid question type.");
+                    return;
+                }
             },
             p => true
         )));
@@ -157,10 +211,52 @@ namespace Quiz.ViewModels
                     MessageBox.Show("No answers provided.");
                     return;
                 }
-                foreach (var answerText in CurrentAnswersTexts)
+                if (CurrentAnswersTexts.Any(a => string.IsNullOrWhiteSpace(a)))
                 {
-                    CurrentQuestion.Answers.Add(new Answer(answerText, false, Questions.IndexOf(CurrentQuestion)));
+                    MessageBox.Show("Answer text cannot be empty.");
+                    return;
                 }
+                if (CurrentAnswersTexts.Length != 4)
+                {
+                    MessageBox.Show("Exactly 4 answers must be provided.");
+                    return;
+                }
+                // Check if no answers were marked as correct (all bools in array false)
+                foreach (var index in Enumerable.Range(0, 4))
+                {
+                    if (CorrectAnswers[index])
+                    {
+                        break;
+                    }
+                    if (index == 3)
+                    {
+                        MessageBox.Show("At least one answer must be marked as correct.");
+                        return;
+                    }
+                }
+
+                if (CurrentQuestion.Type == QuestionType.SingleChoice && CorrectAnswers.Count(c => c) > 1)
+                {
+                    MessageBox.Show("Only one answer can be correct for a single choice question.");
+                    return;
+                }
+
+                if (CurrentQuestion.Type == QuestionType.MultipleChoice && CorrectAnswers.Count(c => c) == 0)
+                {
+                    MessageBox.Show("At least one answer must be correct for a multiple choice question.");
+                    return;
+                }
+                foreach (var index in Enumerable.Range(0, 4))
+                {
+                    var text = CurrentAnswersTexts[index];
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        bool isCorrect = CorrectAnswers[index];
+                        CurrentQuestion.Answers.Add(new Answer(text, isCorrect, Questions.IndexOf(CurrentQuestion)));
+                    }
+                }
+                CurrentAnswersTexts = new string[4];
+                CorrectAnswers = new bool[4];
                 CurrentAnswersTexts = new string[4]; // Это вызовет PropertyChanged
                 CurrentQuestion = null; // Сбросить текущий вопрос
                 IsQuestionAdded = false; // Сбросить состояние добавления вопроса
@@ -174,4 +270,10 @@ namespace Quiz.ViewModels
             CurrentQuestion = new Question("Hello");
         }
     }
+}
+
+public enum QuestionType
+{
+    SingleChoice,
+    MultipleChoice
 }
