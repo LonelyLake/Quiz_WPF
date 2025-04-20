@@ -22,6 +22,11 @@ namespace Quiz.ViewModels
             {
                 quizTitle = value;
                 OnPropertyChanged(nameof(QuizTitle));
+                if (Quiz != null)
+                {
+                    Quiz.Title = quizTitle;
+                    OnPropertyChanged(nameof(Quiz));
+                }
             }
         }
 
