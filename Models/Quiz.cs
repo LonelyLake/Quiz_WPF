@@ -24,5 +24,6 @@ namespace Quiz.Model
         {
             this.Title = title;
         }
+
     }
 }

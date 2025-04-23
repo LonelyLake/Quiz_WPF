@@ -96,6 +96,7 @@
             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="0 200 10 0">
                 <Button Content="Remove"/> 
                 <Button Content="Modify"/>
+                <Button Content="Save" />
             </StackPanel>
         </DockPanel>
     </DockPanel>

@@ -64,6 +64,17 @@ namespace Quiz.ViewModels
             }
         }
 
+        private bool isQuestionModified = false;
+        public bool IsQuestionModified
+        {
+            get => isQuestionModified;
+            set
+            {
+                isQuestionModified = value;
+                OnPropertyChanged(nameof(IsQuestionModified));
+            }
+        }
+
         public QuestionCollection Questions { get; set; } = new QuestionCollection();
         private Question currentQuestion = null;
         public Question CurrentQuestion
@@ -109,6 +120,17 @@ namespace Quiz.ViewModels
                     SelectedQuestionType = parsedType;
                     OnPropertyChanged(nameof(SelectedQuestionType));
                 }
+            }
+        }
+
+        private AnswerCollection answers = null;
+        public AnswerCollection Answers
+        {
+            get => answers;
+            set
+            {
+                answers = value;
+                OnPropertyChanged(nameof(Answers));
             }
         }
 
@@ -252,14 +274,16 @@ namespace Quiz.ViewModels
                     if (!string.IsNullOrWhiteSpace(text))
                     {
                         bool isCorrect = CorrectAnswers[index];
-                        CurrentQuestion.Answers.Add(new Answer(text, isCorrect, Questions.IndexOf(CurrentQuestion)));
+                        CurrentQuestion.Answers.AddAnswer(text, isCorrect);
                     }
                 }
                 CurrentAnswersTexts = new string[4];
                 CorrectAnswers = new bool[4];
                 CurrentAnswersTexts = new string[4]; // Это вызовет PropertyChanged
+                MessageBox.Show(CurrentQuestion.Answers.ToString());
                 CurrentQuestion = null; // Сбросить текущий вопрос
                 IsQuestionAdded = false; // Сбросить состояние добавления вопроса
+               
             },
             p => true
         )));

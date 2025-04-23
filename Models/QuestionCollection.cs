@@ -25,8 +25,10 @@ namespace Quiz.Models
             Question question = this[questionIndex];
             foreach (var answerText in answers)
             {
-                question.Answers.Add(new Answer(answerText, false, questionIndex));
+                question.Answers.Add(new Answer(answerText, false));
             }
         }
+
+
     }
 }
