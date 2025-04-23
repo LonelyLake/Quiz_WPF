@@ -52,8 +52,8 @@ namespace Quiz.ViewModels
                         {
                             TimeLeft = "0,00";
                             MessageBox.Show(
-                                "Czas dobiegł końca! Sprawdź swój wynik i poprawne odpowiedzi.",
-                                "Koniec!",
+                                "Time is up! Check your score and correct answers.",
+                                "Finish!",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information
                             );
@@ -71,5 +71,23 @@ namespace Quiz.ViewModels
             },
             p => true
         )));
+
+        private ICommand endQuizCommand;
+        public ICommand EndQuizCommand => (endQuizCommand ?? (endQuizCommand = new RelayCommand(
+            p =>
+            {
+                if (_timer != null && millisecondsLeft > 0)
+                {
+                    _timer.Stop();
+                    _timer.Dispose();
+                    _timer = null;
+                }
+            },
+            p => true
+        )));
+
+        
+
+
     }
 }
