@@ -49,7 +49,16 @@ namespace Quiz.Model
             return sb.ToString();
         }
 
-        public 
+        public void Modify(string newQuestionText, QuestionType newType, AnswerCollection newAnswers)
+        {
+            QuestionText = newQuestionText;
+            Type = newType;
+            Answers.Clear();
+            foreach (var answer in newAnswers)
+            {
+                Answers.Add(answer);
+            }
+        }
     }
 }
 
