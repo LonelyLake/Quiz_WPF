@@ -29,6 +29,25 @@ namespace Quiz.Models
             }
         }
 
+        public void ModifyQuestion(int questionIndex, string newQuestionText, QuestionType type, List<string> newAnswers)
+        {
+            if (questionIndex < 0 || questionIndex >= this.Count)
+                throw new ArgumentOutOfRangeException(nameof(questionIndex), "Invalid question index.");
+            this.RemoveAt(questionIndex);
+            Question question = new Question(newQuestionText);
+            question.Type = type;
+            foreach (var answerText in newAnswers)
+            {
+                question.Answers.Add(new Answer(answerText, false));
+            }
+            this.Insert(questionIndex, question);
+        }
 
+        public void RemoveQuestion(int questionIndex)
+        {
+            if (questionIndex < 0 || questionIndex >= this.Count)
+                throw new ArgumentOutOfRangeException(nameof(questionIndex), "Invalid question index.");
+            this.RemoveAt(questionIndex);
+        }
     }
 }

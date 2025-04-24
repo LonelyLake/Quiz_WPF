@@ -1,8 +1,8 @@
 ﻿<UserControl x:Class="Quiz.Views.QuizGeneratorControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Quiz.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200">
@@ -17,37 +17,39 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <DockPanel Background="#E4E4DE" Margin="0 0 0 0">
         <ScrollViewer>
-        <StackPanel DockPanel.Dock="Left" Orientation="Vertical" Width="400" Margin="30 0 30 0">
-            <TextBlock Name="Header" Text="Quiz Generator" FontSize="24" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
-            <Label Content="Quiz Title:"/>
+            <StackPanel DockPanel.Dock="Left" Orientation="Vertical" Width="400" Margin="30 0 30 0">
+                <TextBlock Name="Header" Text="Quiz Generator" FontSize="24" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                <Label Content="Quiz Title:"/>
                 <TextBox Width="300" Text="{Binding QuizTitle, UpdateSourceTrigger=PropertyChanged}" />
                 <Button Content="Create Quiz" Command="{Binding CreateQuizCommand}" />
-            <Separator Margin="0 30 0 30" />
+                <Separator Margin="0 30 0 30" />
 
-                <StackPanel IsEnabled="{Binding IsQuizCreated}">
-                <Label Content="Enter a question:"/>
-                    <TextBox Width="300" Text="{Binding CurrentQuestionText, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Content="Add Question" Command="{Binding AddQuestionCommand}"/>
-            
-                <StackPanel Orientation="Horizontal"  Margin="0 10 0 0">
-                    <Label Content="Question Type:" Margin="0 0 20 0"/>
-                        <ComboBox Width="120" Height="30" ItemsSource="{Binding QuestionTypes}"
+                <StackPanel>
+                    <StackPanel x:Name="QuestionSection" IsEnabled="{Binding IsQuestionSectionEnabled}">
+                        <Label Content="Enter a question:"/>
+                        <TextBox Width="300" Text="{Binding CurrentQuestionText, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Content="Add Question" Command="{Binding AddQuestionCommand}" IsEnabled="{Binding IsQuestionCreating}"/>
+
+                        <StackPanel Orientation="Horizontal"  Margin="0 10 0 0">
+                            <Label Content="Question Type:" Margin="0 0 20 0"/>
+                            <ComboBox Width="120" Height="30" ItemsSource="{Binding QuestionTypes}"
                             SelectedItem="{Binding SelectedQuestionTypeString, Mode=TwoWay}"
                              SelectedIndex="0">
-                        </ComboBox>
-                </StackPanel>
-                <Separator Margin="0 30 0 30" />
-                    <DockPanel IsEnabled="{Binding IsQuestionAdded}">
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                    <Separator Margin="0 30 0 30" />
+                    <DockPanel x:Name="AnswerSection" IsEnabled="{Binding IsAnswerSectionEnabled}">
                         <StackPanel DockPanel.Dock="Left" Name="Answers" Orientation="Vertical">
                             <Label Content="Answers:"/>
                             <TextBox Width="200" Text="{Binding CurrentAnswersTexts[0], UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Width="200" Text="{Binding CurrentAnswersTexts[1], UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Width="200" Text="{Binding CurrentAnswersTexts[2], UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Width="200" Text="{Binding CurrentAnswersTexts[3], UpdateSourceTrigger=PropertyChanged}"/>
-                            <Button Content="Add answers" Margin="10 20 0 20" Command="{Binding AddAnswersCommand}"/>
+                            <Button Content="Add answers" Margin="10 20 0 20" Command="{Binding AddAnswersCommand}" IsEnabled="{Binding IsQuestionCreating}"/>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="30 0 0 0">
                             <Label Content="Correct Answer:"/>
@@ -69,7 +71,7 @@
                     <TextBlock Text="{Binding QuizTitle}" Margin="10"/>
                 </StackPanel>
                 <TextBlock Text="Questions:" FontWeight="Bold" Margin="10 10 5 5"/>
-                <ListBox Width="450" Height="200" Margin="10" ItemsSource="{Binding Questions}" SelectedItem="{Binding CurrentQuestion}">
+                <ListBox Width="450" Height="200" Margin="10" ItemsSource="{Binding Questions}" SelectedItem="{Binding SelectedQuestion}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="5">
@@ -79,7 +81,7 @@
                                     <ItemsControl ItemsSource="{Binding Answers}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding AnswerText}" Margin="5"/>
+                                                <TextBlock Text="{Binding AnswerText}" Background="{Binding BackgroundColor}" Margin="5" Padding="10 5 5 5"/>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -94,9 +96,9 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="0 200 10 0">
-                <Button Content="Remove"/> 
-                <Button Content="Modify"/>
-                <Button Content="Save" />
+                <Button Content="Remove" Command="{Binding DeleteQuestionCommand}"/>
+                <Button Content="Modify" Command="{Binding ModifyQuestionCommand}" IsEnabled="{Binding CanModifyQuestion}"/>
+                <Button Content="Save" Command="{Binding SaveChangesCommand}" IsEnabled="{Binding CanModifyQuestion}" />
             </StackPanel>
         </DockPanel>
     </DockPanel>

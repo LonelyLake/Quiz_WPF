@@ -11,6 +11,8 @@ namespace Quiz.Model
         public string AnswerText { get; set; }
         public bool IsCorrect { get; set; }
 
+        // public string FullAnswerText { get; set; } // Полное текстовое представление ответа
+
         // Свойство для хранения индекса правильного ответа в вопросе
         public string BackgroundColor => IsCorrect ? "LightGreen" : "White";
 
@@ -18,6 +20,17 @@ namespace Quiz.Model
         {
             AnswerText = answerText;
             IsCorrect = isCorrect;
+
+            /*
+            if (IsCorrect)
+            {
+                FullAnswerText = $"{AnswerText} (Correct)";
+            }
+            else
+            {
+                FullAnswerText = AnswerText;
+            }
+            */
         }
 
         // Метод для сброса других правильных ответов, если выбран одиночный выбор
