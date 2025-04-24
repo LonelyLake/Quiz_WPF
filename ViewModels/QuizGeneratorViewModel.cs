@@ -9,6 +9,7 @@ namespace Quiz.ViewModels
 {
     using Quiz.Model;
     using Quiz.Models;
+    using Quiz.Services;
     using System.Collections;
     using System.Windows;
     using System.Windows.Input;
@@ -42,36 +43,36 @@ namespace Quiz.ViewModels
             }
         }
 
-        private bool isQuizCreated = false;
-        public bool IsQuizCreated
+        private bool isQuestionSectionEnabled = false;
+        public bool IsQuestionSectionEnabled
         {
-            get => isQuizCreated;
+            get => isQuestionSectionEnabled;
             set
             {
-                isQuizCreated = value;
-                OnPropertyChanged(nameof(IsQuizCreated));
+                isQuestionSectionEnabled = value;
+                OnPropertyChanged(nameof(IsQuestionSectionEnabled));
             }
         }
 
-        private bool isQuestionAdded = false;
-        public bool IsQuestionAdded
+        private bool isAnswerSectionEnabled = false;
+        public bool IsAnswerSectionEnabled
         {
-            get => isQuestionAdded;
+            get => isAnswerSectionEnabled;
             set
             {
-                isQuestionAdded = value;
-                OnPropertyChanged(nameof(IsQuestionAdded));
+                isAnswerSectionEnabled = value;
+                OnPropertyChanged(nameof(IsAnswerSectionEnabled));
             }
         }
 
-        private bool isQuestionModified = false;
-        public bool IsQuestionModified
+        private bool isQuestionCreating = true;
+        public bool IsQuestionCreating
         {
-            get => isQuestionModified;
+            get => isQuestionCreating;
             set
             {
-                isQuestionModified = value;
-                OnPropertyChanged(nameof(IsQuestionModified));
+                isQuestionCreating = value;
+                OnPropertyChanged(nameof(IsQuestionCreating));
             }
         }
 
@@ -98,6 +99,17 @@ namespace Quiz.ViewModels
             }
         }
 
+        private Question selectedQuestion = null;
+        public Question SelectedQuestion
+        {
+            get => selectedQuestion;
+            set
+            {
+                selectedQuestion = value;
+                OnPropertyChanged(nameof(SelectedQuestion));
+            }
+        }
+
         private QuestionType selectedQuestionType;
         public QuestionType SelectedQuestionType
         {
@@ -110,15 +122,18 @@ namespace Quiz.ViewModels
         }
 
         public string[] QuestionTypes => Enum.GetNames(typeof(QuestionType));
+
+        private string selectedQuestionTypeString;
         public string SelectedQuestionTypeString
         {
-            get => selectedQuestionType.ToString();
+            get => selectedQuestionTypeString;
             set
             {
-                if (Enum.TryParse(value, out QuestionType parsedType))
+                selectedQuestionTypeString = value;
+                OnPropertyChanged(nameof(SelectedQuestionTypeString));
+                if (Enum.TryParse(selectedQuestionTypeString, out QuestionType type))
                 {
-                    SelectedQuestionType = parsedType;
-                    OnPropertyChanged(nameof(SelectedQuestionType));
+                    SelectedQuestionType = type;
                 }
             }
         }
@@ -156,6 +171,19 @@ namespace Quiz.ViewModels
             }
         }
 
+        private bool canModifyQuestion = true;
+        public bool CanModifyQuestion
+        {
+            get => canModifyQuestion;
+            set
+            {
+                canModifyQuestion = value;
+                OnPropertyChanged(nameof(CanModifyQuestion));
+            }
+        }
+
+
+
         private ICommand createQuizCommand;
         public ICommand CreateQuizCommand => (createQuizCommand ?? (createQuizCommand = new RelayCommand(
             p =>
@@ -171,7 +199,7 @@ namespace Quiz.ViewModels
                     return;
                 }
                 quiz = new Quiz(quizTitle);
-                IsQuizCreated = true;
+                IsQuestionSectionEnabled = true;
             },
             p => true
         )));
@@ -196,9 +224,10 @@ namespace Quiz.ViewModels
                 Quiz.Questions.Add(newQuestion);
                 CurrentQuestionText = ""; // очистить поле
                 CurrentQuestion = newQuestion;
-                IsQuestionAdded = true;
-
-                
+                SelectedQuestion = newQuestion; // установить текущий вопрос
+                IsQuestionSectionEnabled = false; // отключить секцию вопросов
+                IsAnswerSectionEnabled = true;
+                CanModifyQuestion = false;
 
                 if (SelectedQuestionType == QuestionType.SingleChoice)
                 {
@@ -282,8 +311,115 @@ namespace Quiz.ViewModels
                 CurrentAnswersTexts = new string[4]; // Это вызовет PropertyChanged
                 MessageBox.Show(CurrentQuestion.Answers.ToString());
                 CurrentQuestion = null; // Сбросить текущий вопрос
-                IsQuestionAdded = false; // Сбросить состояние добавления вопроса
-               
+                IsAnswerSectionEnabled = false; // Сбросить состояние добавления вопроса
+                IsQuestionSectionEnabled = true; // Включить секцию вопросов
+                CanModifyQuestion = true; // Включить возможность модификации вопроса
+            },
+            p => true
+        )));
+
+        private ICommand modifyQuestionCommand;
+        public ICommand ModifyQuestionCommand => (modifyQuestionCommand ?? (modifyQuestionCommand = new RelayCommand(
+            p =>
+            {
+                if (SelectedQuestion == null)
+                {
+                    MessageBox.Show("No question selected.");
+                    return;
+                }
+
+                IsQuestionSectionEnabled = true;
+                IsAnswerSectionEnabled = true;
+                // IsQuestionModifying = true;
+                IsQuestionCreating = false;
+                CurrentQuestion = SelectedQuestion;
+                CurrentQuestionText = SelectedQuestion.QuestionText;
+                SelectedQuestionType = SelectedQuestion.Type;
+                SelectedQuestionTypeString = SelectedQuestion.Type.ToString();
+                CurrentAnswersTexts = SelectedQuestion.Answers.Select(a => a.AnswerText).ToArray();
+                CorrectAnswers = SelectedQuestion.Answers.Select(a => a.IsCorrect).ToArray();
+                //CanModifyQuestion = false;
+
+            },
+            p => true
+        )));
+
+        private ICommand saveChangesCommand;
+        public ICommand SaveChangesCommand => (saveChangesCommand ?? (saveChangesCommand = new RelayCommand(
+            p =>
+            {
+                if (SelectedQuestion == null)
+                {
+                    MessageBox.Show("No question selected.");
+                    return;
+                }
+                if (IsQuestionCreating)
+                {
+                    MessageBox.Show("Question is not being modified.");
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(CurrentQuestionText))
+                {
+                    MessageBox.Show("Question text cannot be empty.");
+                    return;
+                }
+                if (CurrentAnswersTexts == null || CurrentAnswersTexts.Length == 0)
+                {
+                    MessageBox.Show("No answers provided.");
+                    return;
+                }
+                if (CurrentAnswersTexts.Any(a => string.IsNullOrWhiteSpace(a)))
+                {
+                    MessageBox.Show("Answer text cannot be empty.");
+                    return;
+                }
+                if (correctAnswers == null || correctAnswers.Length == 0)
+                {
+                    MessageBox.Show("No correct answers provided.");
+                    return;
+                }
+                if (SelectedQuestionType == QuestionType.SingleChoice && CorrectAnswers.Count(c => c) > 1)
+                {
+                    MessageBox.Show("Only one answer can be correct for a single choice question.");
+                    return;
+                }
+
+                Quiz.Questions.ModifyQuestion(Questions.IndexOf(CurrentQuestion), CurrentQuestionText, SelectedQuestionType, CurrentAnswersTexts.ToList(), CorrectAnswers.ToList());
+                Questions.ModifyQuestion(Questions.IndexOf(CurrentQuestion), CurrentQuestionText, SelectedQuestionType, CurrentAnswersTexts.ToList(), CorrectAnswers.ToList());
+                MessageBox.Show("Changes saved.");
+                resetCurrentQuestion();
+                //CanModifyQuestion = true;
+            },
+            p => true
+        )));
+
+        private ICommand deleteQuestionCommand;
+        public ICommand DeleteQuestionCommand => (deleteQuestionCommand ?? (deleteQuestionCommand = new RelayCommand(
+            p =>
+            {
+                if (SelectedQuestion == null)
+                {
+                    MessageBox.Show("No question selected.");
+                    return;
+                }
+
+                if ((!IsQuestionSectionEnabled && SelectedQuestion.Equals(CurrentQuestion)))
+                {
+                    IsQuestionSectionEnabled = true;
+                    IsAnswerSectionEnabled = false;
+                }
+                if (!IsQuestionCreating && SelectedQuestion.Equals(CurrentQuestion))
+                {
+                    IsQuestionCreating = true;
+                    IsQuestionSectionEnabled = true;
+                    IsAnswerSectionEnabled = false;
+                }
+
+                Quiz.Questions.Remove(SelectedQuestion);
+                Questions.Remove(SelectedQuestion);
+                
+                resetCurrentQuestion();
+                MessageBox.Show("Question deleted.");       
             },
             p => true
         )));
@@ -292,6 +428,106 @@ namespace Quiz.ViewModels
         {
             Questions = new QuestionCollection();
             CurrentQuestion = new Question("Hello");
+        }
+
+        private void resetCurrentQuestion()
+        {
+            CurrentQuestion = null;
+            CurrentQuestionText = string.Empty;
+            CurrentAnswersTexts = new string[4];
+            CorrectAnswers = new bool[4];
+        }
+
+        private ICommand saveQuizToFileCommand;
+        public ICommand SaveQuizToFileCommand => (saveQuizToFileCommand ?? (saveQuizToFileCommand = new RelayCommand(
+            p =>
+            {
+                if (Quiz == null)
+                {
+                    MessageBox.Show("No quiz to save.");
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(QuizTitle))
+                {
+                    MessageBox.Show("Quiz title cannot be empty.");
+                    return;
+                }
+                if (Quiz.Questions.Count == 0)
+                {
+                    MessageBox.Show("No questions in the quiz.");
+                    return;
+                }
+                if (!isQuestionSectionEnabled)
+                {
+                    MessageBox.Show("Finish creating question before saving.");
+                    return;
+                }
+
+                try
+                {
+                    // Implement the logic to save the quiz to a file
+                    QuizFileManager.SaveQuizToFile(Quiz);
+                    // You can use serialization or any other method to save the quiz data
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving quiz: {ex.Message}");
+                }
+
+            },
+            p => true
+        )));
+
+        private ICommand loadQuizFromFileCommand;
+        public ICommand LoadQuizFromFileCommand => (loadQuizFromFileCommand ?? (loadQuizFromFileCommand = new RelayCommand(
+            p =>
+            {
+                try
+                {
+                    // Implement the logic to load the quiz from a file
+                    Quiz loadedQuiz = QuizFileManager.LoadQuizFromFile();
+                    if (loadedQuiz == null)
+                    {
+                        MessageBox.Show("No quiz loaded.");
+                        return;
+                    }
+
+
+                    if (loadedQuiz != null)
+                    {
+                        Quiz = loadedQuiz;
+                        QuizTitle = loadedQuiz.Title;
+                        Questions.Clear();
+                        foreach (var question in loadedQuiz.Questions)
+                        {
+                            Questions.Add(question);
+                        }
+                        MessageBox.Show("Quiz loaded from file.");
+
+                        IsQuestionSectionEnabled = true;
+                        IsAnswerSectionEnabled = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading quiz: {ex.Message}");
+                }
+            },
+            p => true
+        )));
+
+        private void resetQuiz()
+        {
+            Quiz = null;
+            QuizTitle = string.Empty;
+            Questions.Clear();
+            CurrentQuestion = null;
+            CurrentQuestionText = string.Empty;
+            CurrentAnswersTexts = new string[4];
+            CorrectAnswers = new bool[4];
+            IsQuestionSectionEnabled = false;
+            IsAnswerSectionEnabled = false;
+            CanModifyQuestion = true;
         }
     }
 }

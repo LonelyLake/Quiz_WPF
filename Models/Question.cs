@@ -19,6 +19,11 @@ namespace Quiz.Model
         {
             QuestionText = questionText;
         }
+        public Question(string questionText, QuestionType type)
+        {
+            QuestionText = questionText;
+            Type = type;
+        }
 
         public void AddAnswer(string answerText, bool isCorrect)
         {
@@ -47,17 +52,6 @@ namespace Quiz.Model
                 sb.AppendLine(answer.ToString());
             }
             return sb.ToString();
-        }
-
-        public void Modify(string newQuestionText, QuestionType newType, AnswerCollection newAnswers)
-        {
-            QuestionText = newQuestionText;
-            Type = newType;
-            Answers.Clear();
-            foreach (var answer in newAnswers)
-            {
-                Answers.Add(answer);
-            }
         }
     }
 }
