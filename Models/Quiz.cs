@@ -20,10 +20,24 @@ namespace Quiz.Model
                 // NotifyPropertyChanged(nameof(Title));
             }
         }
+
+        public const int ANSWER_COUNT = 4;
+
         public Quiz(string title)
         {
             this.Title = title;
         }
 
+        public override string ToString()
+        {
+            string separator = ";";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Quiz Title: {Title}" + separator);
+            foreach (var question in Questions)
+            {
+                sb.AppendLine(question.ToString() + separator);
+            }
+            return sb.ToString();
+        }
     }
 }

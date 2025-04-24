@@ -19,6 +19,11 @@ namespace Quiz.Model
         {
             QuestionText = questionText;
         }
+        public Question(string questionText, QuestionType type)
+        {
+            QuestionText = questionText;
+            Type = type;
+        }
 
         public void AddAnswer(string answerText, bool isCorrect)
         {

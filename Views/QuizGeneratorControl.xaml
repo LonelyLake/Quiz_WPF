@@ -91,8 +91,8 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <StackPanel Orientation="Horizontal" Margin="10">
-                    <Button Content="Save Quiz"/>
-                    <Button Content="Load Quiz"/>
+                    <Button Content="Save Quiz" Command="{Binding SaveQuizToFileCommand}"/>
+                    <Button Content="Load Quiz" Command="{Binding LoadQuizFromFileCommand}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="0 200 10 0">
