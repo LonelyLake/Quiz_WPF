@@ -220,8 +220,11 @@
             <Separator Margin="40,40,40,10" Background="#FF2C4019"/>
             <WrapPanel>
                 <Label Content="Points:" Foreground="#FF2C4019" FontWeight="Bold" FontSize="48" Width="165" Margin="45,0,0,0"/>
-                <TextBlock x:Name="points_tbl" Text="{Binding Points}" FontSize="48" 
-                           FontWeight="Bold" Width="100" Foreground="#FF2C4019" Margin="10,9,0,0"/>
+                <TextBlock x:Name="points_tbl" Width="100" Height="65"
+           Text="{Binding Points}" FontSize="48" 
+           FontWeight="Bold" HorizontalAlignment="Center"
+           VerticalAlignment="Bottom" Foreground="#FF2C4019"/>
+
             </WrapPanel>
         </StackPanel>
 
@@ -239,8 +242,12 @@
                                 <ItemsControl ItemsSource="{Binding Answers}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <CheckBox Content="{Binding AnswerText}" 
-                                                      IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="5"/>
+                                            <CheckBox Content="{Binding AnswerText}"
+          IsChecked="{Binding IsSelected, Mode=TwoWay}"
+          IsEnabled="{Binding IsEnabled}"
+          Background="{Binding BackgroundColor}"
+          Margin="5"/>
+
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

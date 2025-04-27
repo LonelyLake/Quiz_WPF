@@ -11,12 +11,25 @@ namespace Quiz.Model
         public string AnswerText { get; set; }
         public bool IsCorrect { get; set; }
         public bool IsSelected { get; set; }
-
+        public bool IsEnabled { get; set; } = true;
 
         // public string FullAnswerText { get; set; } // Полное текстовое представление ответа
 
         // Свойство для хранения индекса правильного ответа в вопросе
-        public string BackgroundColor => IsCorrect ? "LightGreen" : "White";
+        private string _backgroundColor = null;
+
+        // Twoja właściwość – jeśli została ustawiona, bierze Twoje tło
+        public string BackgroundColor
+        {
+            get
+            {
+                return _backgroundColor ?? (IsCorrect ? "LightGreen" : "White");
+            }
+            set
+            {
+                _backgroundColor = value;
+            }
+        }
 
         public Answer(string answerText, bool isCorrect)
         {
