@@ -78,7 +78,7 @@ namespace Quiz.ViewModels
                 loadedQuiz = QuizFileManager.LoadQuizFromFile();
                 if (loadedQuiz != null)
                 {
-                    MessageBox.Show("Quiz został pomyślnie załadowany.", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Quiz has been successfully loaded.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     OnPropertyChanged(nameof(IsQuizLoaded));
                     RaiseAllCommandsCanExecuteChanged();
                 }
@@ -88,64 +88,69 @@ namespace Quiz.ViewModels
 
         private ICommand startTimerCommand;
         public ICommand StartTimerCommand => startTimerCommand ??= new RelayCommand(
-            p =>
+    p =>
+    {
+        if (loadedQuiz == null) return;
+
+        DisplayedQuestions.Clear(); // Czyścimy pytania przed startem
+
+        foreach (var question in loadedQuiz.Questions)
+        {
+            var newQuestion = new Question(question.QuestionText, question.Type);
+            foreach (var answer in question.Answers)
             {
-                if (loadedQuiz == null) return;
-
-                DisplayedQuestions.Clear();
-                foreach (var q in loadedQuiz.Questions)
+                newQuestion.Answers.Add(new Answer(answer.AnswerText, answer.IsCorrect)
                 {
-                    foreach (var question in loadedQuiz.Questions)
-                    {
-                        foreach (var answer in question.Answers)
-                        {
-                            answer.BackgroundColor = "Transparent"; // usuwamy kolory
-                            answer.IsEnabled = true;                 // odblokowujemy odpowiedzi
-                            answer.IsSelected = false;               // czyszczenie zaznaczenia
-                        }
+                    IsEnabled = true,
+                    BackgroundColor = "Transparent",
+                    IsSelected = false
+                });
+            }
 
-                        DisplayedQuestions.Add(question);
-                    }
+            DisplayedQuestions.Add(newQuestion);
+        }
+
+        // ===> Tutaj odświeżamy IsQuizReady
+        OnPropertyChanged(nameof(IsQuizReady));
 
 
-                }
+        IsQuizStarted = true;
+        IsQuizEnded = false;
 
-                IsQuizStarted = true;
-                IsQuizEnded = false;
+        millisecondsLeft = 30_000;
+        TimeLeft = (millisecondsLeft / 1000).ToString("F2");
 
-                millisecondsLeft = 30_000;
+        _timer = new System.Timers.Timer(10);
+        _timer.Elapsed += (s, e) =>
+        {
+            millisecondsLeft -= 10;
+
+            if (millisecondsLeft <= 0)
+            {
+                millisecondsLeft = 0;
+                _timer.Stop();
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    TimeLeft = "0,00";
+                    EndQuiz(); // Automatyczne zakończenie quizu
+                });
+
+                return;
+            }
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
                 TimeLeft = (millisecondsLeft / 1000).ToString("F2");
+            });
+        };
 
-                _timer = new System.Timers.Timer(10);
-                _timer.Elapsed += (s, e) =>
-                {
-                    millisecondsLeft -= 10;
+        _timer.Start();
+        RaiseAllCommandsCanExecuteChanged();
+    },
+    p => IsQuizLoaded && !IsQuizStarted && !IsQuizEnded
+);
 
-                    if (millisecondsLeft <= 0)
-                    {
-                        millisecondsLeft = 0;
-                        _timer.Stop();
-
-                        App.Current.Dispatcher.Invoke(() =>
-                        {
-                            TimeLeft = "0,00";
-                            EndQuiz(); // Automatycznie zakończ quiz po czasie
-                        });
-
-                        return;
-                    }
-
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        TimeLeft = (millisecondsLeft / 1000).ToString("F2");
-                    });
-                };
-
-                _timer.Start();
-                RaiseAllCommandsCanExecuteChanged();
-            },
-            p => IsQuizLoaded && !IsQuizStarted && !IsQuizEnded // Start aktywny tylko przed startem i przed zakończeniem
-        );
 
         private ICommand endQuizCommand;
         public ICommand EndQuizCommand => endQuizCommand ??= new RelayCommand(
@@ -204,9 +209,13 @@ namespace Quiz.ViewModels
                 }
             }
 
-            MessageBox.Show($"Koniec quizu!\nTwój wynik: {Points} pkt.", "Wynik", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"Quiz has ended!\nYour result: {Points} points.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
 
             RaiseAllCommandsCanExecuteChanged();
+
+            // ===> Tutaj odświeżamy IsQuizReady
+            OnPropertyChanged(nameof(IsQuizReady));
+
         }
 
         private void RaiseAllCommandsCanExecuteChanged()
@@ -215,5 +224,41 @@ namespace Quiz.ViewModels
             (startTimerCommand as RelayCommand)?.RaiseCanExecuteChanged();
             (endQuizCommand as RelayCommand)?.RaiseCanExecuteChanged();
         }
+
+        public bool IsQuizReady
+        {
+            get => DisplayedQuestions != null && DisplayedQuestions.Count > 0;
+        }
+
+        private ICommand resetQuizCommand = null;
+        public ICommand ResetQuizCommand => resetQuizCommand ??= new RelayCommand(
+            p =>
+            {
+                ResetQuiz();
+            },
+            p => true // <-- ZAWSZE aktywny!
+        );
+
+
+        private void ResetQuiz()
+        {
+            if (_timer != null)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+                _timer = null;
+            }
+
+            loadedQuiz = null;
+            DisplayedQuestions.Clear();
+            Points = 0;
+            IsQuizStarted = false;
+            IsQuizEnded = false;
+
+            OnPropertyChanged(nameof(IsQuizLoaded));
+            OnPropertyChanged(nameof(IsQuizReady));
+            RaiseAllCommandsCanExecuteChanged();
+        }
+
     }
 }

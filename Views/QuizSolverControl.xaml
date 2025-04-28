@@ -192,6 +192,63 @@
             </Setter>
         </Style>
 
+        <Style x:Key="ResetButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FF98AF85"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6"
+                        RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF3F5E1E" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                    To="1.07" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                    To="1.07" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="Black" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                    To="1.0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                    To="1.0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
     </UserControl.Resources>
 
     <Grid>
@@ -224,6 +281,12 @@
            Text="{Binding Points}" FontSize="48" 
            FontWeight="Bold" HorizontalAlignment="Center"
            VerticalAlignment="Bottom" Foreground="#FF2C4019"/>
+                <Button Content="Reset Quiz"
+        Style="{StaticResource ResetButtonStyle}"
+        Command="{Binding ResetQuizCommand}"
+        Margin="20,10,0,0"/>
+
+
 
             </WrapPanel>
         </StackPanel>
@@ -231,10 +294,11 @@
         <ScrollViewer Grid.Column="1">
             <StackPanel Background="#FF98AF85">
                 <TextBlock Text="Quiz Solver" Foreground="#FF2C4019" HorizontalAlignment="Center" 
-                           FontWeight="Bold" FontSize="60" Margin="0,10,0,10"/>
+                   FontWeight="Bold" FontSize="60" Margin="0,10,0,10"/>
                 <Separator Margin="40,0,40,0" Background="#FF2C4019"/>
-                <ItemsControl ItemsSource="{Binding DisplayedQuestions}" 
-                              Visibility="{Binding IsQuizStarted, Converter={StaticResource BoolToVisibility}}">
+
+                <!-- ItemsControl wewnątrz poprawnie -->
+                <ItemsControl ItemsSource="{Binding DisplayedQuestions}" Visibility="{Binding IsQuizReady, Converter={StaticResource BoolToVisibility}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="60,20" Background="#FF98AF85">
@@ -243,11 +307,10 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <CheckBox Content="{Binding AnswerText}"
-          IsChecked="{Binding IsSelected, Mode=TwoWay}"
-          IsEnabled="{Binding IsEnabled}"
-          Background="{Binding BackgroundColor}"
-          Margin="5"/>
-
+                                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                              IsEnabled="{Binding IsEnabled}"
+                                              Background="{Binding BackgroundColor}"
+                                              Margin="5"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
@@ -255,12 +318,146 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="Your quiz will appear here after start" Foreground="#FF2C4019" 
-                           HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="20" 
-                           Visibility="{Binding IsQuizStarted, Converter={StaticResource InverseBoolToVisibility}}"/>
-                <ProgressBar Style="{StaticResource HourglassStyle}" 
-                         Visibility="{Binding IsQuizStarted, Converter={StaticResource InverseBoolToVisibility}}"/>
+
+                <!-- Tekst "Your quiz will appear here" pokazuje się, kiedy nie ma pytań -->
+                <TextBlock Text="Your quiz will appear here after start"
+                   Visibility="{Binding IsQuizReady, Converter={StaticResource InverseBoolToVisibility}}"
+                   Foreground="#FF2C4019"
+                   HorizontalAlignment="Center"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="20"/>
+                <Separator Margin="40,30,40,20" Background="#FF2C4019"/>
+
+                <Grid Visibility="{Binding IsQuizReady, Converter={StaticResource InverseBoolToVisibility}}"
+      VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
+                        <TextBlock Text="Waiting for Quiz to Load..." 
+                   FontSize="28" 
+                   FontWeight="Bold" 
+                   Foreground="#FF2C4019" 
+                   HorizontalAlignment="Center" 
+                   Margin="20"/>
+
+                        <Canvas Height="350" Width="250" HorizontalAlignment="Center">
+                            <!-- Tło klepsydry -->
+                            <Path Fill="#FF446028" Opacity="0.4">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathFigure StartPoint="25,25">
+                                            <LineSegment Point="225,25" />
+                                            <LineSegment Point="175,175" />
+                                            <LineSegment Point="225,325" />
+                                            <LineSegment Point="25,325" />
+                                            <LineSegment Point="75,175" />
+                                            <LineSegment Point="25,25" />
+                                        </PathFigure>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+
+                            <!-- Górna część piasku - statyczna, tylko animacja wysokości -->
+                            <Rectangle x:Name="sandTop" Fill="#FF98AF85" Width="150" Height="120" 
+                       Canvas.Left="50" Canvas.Top="45" />
+
+                            <!-- Dolna część piasku - statyczna, tylko animacja wysokości -->
+                            <Rectangle x:Name="sandBottom" Fill="#FF98AF85" Width="150" Height="30" 
+                       Canvas.Left="50" Canvas.Top="205" />
+
+                            <!-- Strumień piasku -->
+                            <Rectangle x:Name="sandStream" Fill="#FF98AF85" Width="8" Height="20" 
+                       Canvas.Left="121" Canvas.Top="165" />
+
+                            <!-- Cząsteczki piasku - używamy Canvas.Top zamiast Margin.Top -->
+                            <Ellipse x:Name="sandParticle1" Fill="#FF98AF85" Width="6" Height="6" 
+                     Canvas.Left="118" Canvas.Top="160" />
+                            <Ellipse x:Name="sandParticle2" Fill="#FF98AF85" Width="5" Height="5" 
+                     Canvas.Left="130" Canvas.Top="150" />
+                            <Ellipse x:Name="sandParticle3" Fill="#FF98AF85" Width="7" Height="7" 
+                     Canvas.Left="110" Canvas.Top="170" />
+
+                            <!-- Obrys klepsydry -->
+                            <Path Stroke="#FF2C4019" StrokeThickness="3" Fill="Transparent">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathFigure StartPoint="25,25">
+                                            <LineSegment Point="225,25" />
+                                            <LineSegment Point="175,175" />
+                                            <LineSegment Point="225,325" />
+                                            <LineSegment Point="25,325" />
+                                            <LineSegment Point="75,175" />
+                                            <LineSegment Point="25,25" />
+                                        </PathFigure>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+                        </Canvas>
+
+                        <TextBlock Text="Preparing questions..." 
+                   FontSize="28" 
+                   Foreground="#FF2C4019" 
+                   HorizontalAlignment="Center" 
+                   FontWeight="Bold"
+                   Margin="10"/>
+
+                        <StackPanel.Triggers>
+                            <EventTrigger RoutedEvent="StackPanel.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <!-- Animacja topniejącego piasku w górnej części -->
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandTop" 
+                            Storyboard.TargetProperty="Height"
+                            From="120" To="30" 
+                            Duration="0:0:3" 
+                            RepeatBehavior="Forever" />
+
+                                        <!-- Animacja rosnącego piasku w dolnej części -->
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandBottom" 
+                            Storyboard.TargetProperty="Height"
+                            From="30" To="120" 
+                            Duration="0:0:3" 
+                            RepeatBehavior="Forever" />
+
+                                        <!-- Animacja strumienia piasku -->
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandStream" 
+                            Storyboard.TargetProperty="Height"
+                            From="10" To="30" 
+                            Duration="0:0:0.5" 
+                            AutoReverse="True"
+                            RepeatBehavior="Forever" />
+
+                                        <!-- Animacja spadających cząsteczek piasku - używamy Canvas.Top -->
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandParticle1" 
+                            Storyboard.TargetProperty="(Canvas.Top)"
+                            From="160" To="250" 
+                            Duration="0:0:1.2" 
+                            RepeatBehavior="Forever" />
+
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandParticle2" 
+                            Storyboard.TargetProperty="(Canvas.Top)"
+                            From="150" To="240" 
+                            Duration="0:0:0.9" 
+                            RepeatBehavior="Forever" />
+
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandParticle3" 
+                            Storyboard.TargetProperty="(Canvas.Top)"
+                            From="170" To="260" 
+                            Duration="0:0:1.5" 
+                            RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </StackPanel.Triggers>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
         </ScrollViewer>
+
     </Grid>
 </UserControl>
