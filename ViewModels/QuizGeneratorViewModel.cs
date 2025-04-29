@@ -308,12 +308,11 @@ namespace Quiz.ViewModels
                 }
                 CurrentAnswersTexts = new string[4];
                 CorrectAnswers = new bool[4];
-                CurrentAnswersTexts = new string[4]; // Это вызовет PropertyChanged
-                MessageBox.Show(CurrentQuestion.Answers.ToString());
-                CurrentQuestion = null; // Сбросить текущий вопрос
-                IsAnswerSectionEnabled = false; // Сбросить состояние добавления вопроса
-                IsQuestionSectionEnabled = true; // Включить секцию вопросов
-                CanModifyQuestion = true; // Включить возможность модификации вопроса
+                CurrentAnswersTexts = new string[4];
+                CurrentQuestion = null;
+                IsAnswerSectionEnabled = false;
+                IsQuestionSectionEnabled = true;
+                CanModifyQuestion = true;
             },
             p => true
         )));
