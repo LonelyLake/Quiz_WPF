@@ -310,6 +310,7 @@ namespace Quiz.ViewModels
                 CorrectAnswers = new bool[4];
                 CurrentAnswersTexts = new string[4];
                 CurrentQuestion = null;
+                SelectedQuestion = null;
                 IsAnswerSectionEnabled = false;
                 IsQuestionSectionEnabled = true;
                 CanModifyQuestion = true;
@@ -331,6 +332,7 @@ namespace Quiz.ViewModels
                 IsAnswerSectionEnabled = true;
                 // IsQuestionModifying = true;
                 IsQuestionCreating = false;
+
                 CurrentQuestion = SelectedQuestion;
                 CurrentQuestionText = SelectedQuestion.QuestionText;
                 SelectedQuestionType = SelectedQuestion.Type;
@@ -387,7 +389,9 @@ namespace Quiz.ViewModels
                 Questions.ModifyQuestion(Questions.IndexOf(CurrentQuestion), CurrentQuestionText, SelectedQuestionType, CurrentAnswersTexts.ToList(), CorrectAnswers.ToList());
                 MessageBox.Show("Changes saved.");
                 resetCurrentQuestion();
-                //CanModifyQuestion = true;
+                IsQuestionCreating = true;
+                IsQuestionSectionEnabled = true;
+                IsAnswerSectionEnabled = false;
             },
             p => true
         )));
@@ -396,6 +400,12 @@ namespace Quiz.ViewModels
         public ICommand DeleteQuestionCommand => (deleteQuestionCommand ?? (deleteQuestionCommand = new RelayCommand(
             p =>
             {
+                if (isAnswerSectionEnabled)
+                {
+                    MessageBox.Show("Finish creating question before deleting.");
+                    return;
+                }
+
                 if (SelectedQuestion == null)
                 {
                     MessageBox.Show("No question selected.");
@@ -417,8 +427,12 @@ namespace Quiz.ViewModels
                 Quiz.Questions.Remove(SelectedQuestion);
                 Questions.Remove(SelectedQuestion);
                 
-                resetCurrentQuestion();
-                MessageBox.Show("Question deleted.");       
+                
+                MessageBox.Show("Question deleted.");
+
+                IsQuestionSectionEnabled = true;
+                IsAnswerSectionEnabled = false;
+                IsQuestionCreating = true; //
             },
             p => true
         )));
@@ -505,6 +519,8 @@ namespace Quiz.ViewModels
 
                         IsQuestionSectionEnabled = true;
                         IsAnswerSectionEnabled = false;
+                        IsQuestionCreating = true;
+                        CanModifyQuestion = true;
                     }
                 }
                 catch (Exception ex)

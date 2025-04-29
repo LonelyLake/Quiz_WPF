@@ -31,6 +31,14 @@ namespace Quiz.Model
         {
             AnswerText = answerText;
             IsCorrect = isCorrect;
+            if (isCorrect)
+            {
+                BackgroundColor = "LightBlue";
+            }
+            else
+            {
+                BackgroundColor = "Pink";
+            }
         }
 
         public override string ToString()
