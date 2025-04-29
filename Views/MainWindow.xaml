@@ -1,0 +1,38 @@
+﻿<Window x:Class="Quiz.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Quiz.Views"
+        xmlns:vm="clr-namespace:Quiz.ViewModels"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1200">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:QuizGeneratorViewModel}">
+            <views:QuizGeneratorControl />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:QuizSolverViewModel}">
+            <views:QuizSolverControl/>
+        </DataTemplate>
+    </Window.Resources>
+    <DockPanel Background="Black">
+        <Expander Header="Menu" Foreground="White" Background="Black" FontSize="20" FontWeight="Bold" IsExpanded="False" DockPanel.Dock="Top" Margin="30 20 0 20">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="Quiz Generator" Foreground="Black" Background="White"
+                        Command="{Binding NavigateQuizGeneratorCommand}" Margin="0 20 20 0"
+                        Padding="10" FontSize="16"/>
+                <Button Content="Quiz Solver" Foreground="Black" Background="White"
+                        Command="{Binding NavigateQuizSolverCommand}" Margin="0 20 10 0"
+                        Padding="10" FontSize="16"/>
+            </StackPanel>
+        </Expander>
+
+        <!--Dynamiczne ładowanie widoku na podstawie modelu widoku
+    ContentControl.Content będzie powiązany z właściwością CurrentViewModel 
+    w obiekcie, który jest aktualnym DataContext
+    To działa razem z tzw. DataTemplate-->
+        <Border x:Name="MainContentBorder" Margin="0" BorderBrush="Black" BorderThickness="1">
+            <ContentControl Content="{Binding CurrentViewModel}"/>
+        </Border>
+    </DockPanel>
+</Window>

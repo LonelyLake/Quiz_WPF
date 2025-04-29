@@ -1,0 +1,462 @@
+﻿<UserControl x:Class="Quiz.Views.QuizSolverControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Quiz.ViewModels"
+             xmlns:converters="clr-namespace:Quiz.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <UserControl.DataContext>
+        <vm:QuizSolverViewModel/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+
+        <Style x:Key="HourglassStyle" TargetType="ProgressBar">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="IsIndeterminate" Value="True"/>
+            <Setter Property="Foreground" Value="#FF2C4019"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        
+        <Style x:Key="LoadQuizButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FF98AF85"/>
+            <Setter Property="Background" Value="#FF2C4019"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FF4A5D30" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleX)"
+                                                             To="1.1" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleY)"
+                                                             To="1.1" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FF2C4019" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleX)"
+                                                             To="1.0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleY)"
+                                                             To="1.0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StartButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FF98AF85"/>
+            <Setter Property="Background" Value="#FF2C4019"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6"
+                        RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF3F5E1E" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                 To="1.07" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                 To="1.07" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF2C4019" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                 To="1.0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                 To="1.0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+
+        <Style x:Key="EndButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FF98AF85"/>
+            <Setter Property="Background" Value="#FF960C0C"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="Width" Value="175"/>
+            <Setter Property="Height" Value="75"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6"
+                        RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FFD42525" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                     To="1.08" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                     To="1.08" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF960C0C" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                     To="1.0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                     To="1.0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ResetButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FF98AF85"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6"
+                        RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF3F5E1E" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                    To="1.07" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                    To="1.07" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="border" 
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="Black" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                    To="1.0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                    To="1.0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Background="#FF98AF85" Grid.Column="0">
+            <TextBlock Text="Quiz Solver" Foreground="#FF2C4019" HorizontalAlignment="Center" 
+                       FontWeight="Bold" FontSize="60" Margin="0,10,0,10" />
+            <Separator Margin="40,0,40,0" Background="#FF2C4019"/>
+            <TextBlock Text="Welcome to our quiz! Please load a quiz to begin!" Foreground="#FF2C4019" 
+                       HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,20,0,20"/>
+            <Button x:Name="loadQuiz_btn" Content="Load Quiz" Style="{StaticResource LoadQuizButtonStyle}" 
+                    Command="{Binding LoadQuizCommand}"/>
+            <Separator Margin="40,30,40,20" Background="#FF2C4019"/>
+            <TextBlock Text="You have 30s to complete the quiz, have fun!" Foreground="#FF2C4019" 
+                       HorizontalAlignment="Center" FontWeight="Bold" FontSize="24" Margin="0,0,0,10"/>
+            <Button x:Name="start_btn" Content="Start Quiz" Style="{StaticResource StartButtonStyle}" Command="{Binding StartTimerCommand}" Margin="0,10,0,20"/>
+
+            <Separator Margin="40,15,40,10" Background="#FF2C4019"/>
+            <TextBlock Text="{Binding TimeLeft}" FontWeight="Bold" FontSize="90" Foreground="#FF2C4019" 
+                       HorizontalAlignment="Center"/>
+            <Button x:Name="end_btn" Content="End Quiz" Style="{StaticResource EndButtonStyle}" Command="{Binding EndQuizCommand}" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+            <Separator Margin="40,40,40,10" Background="#FF2C4019"/>
+            <WrapPanel>
+                <Label Content="Points:" Foreground="#FF2C4019" FontWeight="Bold" FontSize="48" Width="165" Margin="45,0,0,0"/>
+                <TextBlock x:Name="points_tbl" Width="100" Height="65"
+           Text="{Binding Points}" FontSize="48" 
+           FontWeight="Bold" HorizontalAlignment="Center"
+           VerticalAlignment="Bottom" Foreground="#FF2C4019"/>
+                <Button Content="Reset Quiz"
+        Style="{StaticResource ResetButtonStyle}"
+        Command="{Binding ResetQuizCommand}"
+        Margin="20,10,0,0"/>
+
+
+
+            </WrapPanel>
+        </StackPanel>
+
+        <ScrollViewer Grid.Column="1">
+            <StackPanel Background="#FF98AF85">
+                <TextBlock Text="Quiz Solver" Foreground="#FF2C4019" HorizontalAlignment="Center" 
+                   FontWeight="Bold" FontSize="60" Margin="0,10,0,10"/>
+                <Separator Margin="40,0,40,0" Background="#FF2C4019"/>
+
+                
+                <ItemsControl ItemsSource="{Binding DisplayedQuestions}" Visibility="{Binding IsQuizReady, Converter={StaticResource BoolToVisibility}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="60,20" Background="#FF98AF85">
+                                <TextBlock Text="{Binding QuestionText}" FontSize="20" FontWeight="Bold" Foreground="#2C4019"/>
+                                <ItemsControl ItemsSource="{Binding Answers}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding AnswerText}"
+                                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                              IsEnabled="{Binding IsEnabled}"
+                                              Background="{Binding BackgroundColor}"
+                                              Margin="5"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                
+                <TextBlock Text="Your quiz will appear here after start"
+                   Visibility="{Binding IsQuizReady, Converter={StaticResource InverseBoolToVisibility}}"
+                   Foreground="#FF2C4019"
+                   HorizontalAlignment="Center"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="20,40,20,20"/>
+                <Separator Margin="40,30,40,20" Background="#FF2C4019"/>
+
+                <Grid Visibility="{Binding IsQuizReady, Converter={StaticResource InverseBoolToVisibility}}"
+      VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
+                        <TextBlock Text="Waiting for Quiz to Load..." 
+                   FontSize="28" 
+                   FontWeight="Bold" 
+                   Foreground="#FF2C4019" 
+                   HorizontalAlignment="Center" 
+                   Margin="20"/>
+
+                        <Canvas Height="350" Width="250" HorizontalAlignment="Center">
+                            <Path Fill="#FF446028" Opacity="0.4">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathFigure StartPoint="25,25">
+                                            <LineSegment Point="225,25" />
+                                            <LineSegment Point="175,175" />
+                                            <LineSegment Point="225,325" />
+                                            <LineSegment Point="25,325" />
+                                            <LineSegment Point="75,175" />
+                                            <LineSegment Point="25,25" />
+                                        </PathFigure>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+
+                           
+                            <Rectangle x:Name="sandTop" Fill="#FF98AF85" Width="150" Height="120" 
+                       Canvas.Left="50" Canvas.Top="45" />
+
+                            
+                            <Rectangle x:Name="sandBottom" Fill="#FF98AF85" Width="150" Height="30" 
+                       Canvas.Left="50" Canvas.Top="205" />
+
+                            
+                            <Rectangle x:Name="sandStream" Fill="#FF98AF85" Width="8" Height="20" 
+                       Canvas.Left="121" Canvas.Top="165" />
+
+                            
+                            <Ellipse x:Name="sandParticle1" Fill="#FF98AF85" Width="6" Height="6" 
+                     Canvas.Left="118" Canvas.Top="160" />
+                            <Ellipse x:Name="sandParticle2" Fill="#FF98AF85" Width="5" Height="5" 
+                     Canvas.Left="130" Canvas.Top="150" />
+                            <Ellipse x:Name="sandParticle3" Fill="#FF98AF85" Width="7" Height="7" 
+                     Canvas.Left="110" Canvas.Top="170" />
+
+                            
+                            <Path Stroke="#FF2C4019" StrokeThickness="3" Fill="Transparent">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathFigure StartPoint="25,25">
+                                            <LineSegment Point="225,25" />
+                                            <LineSegment Point="175,175" />
+                                            <LineSegment Point="225,325" />
+                                            <LineSegment Point="25,325" />
+                                            <LineSegment Point="75,175" />
+                                            <LineSegment Point="25,25" />
+                                        </PathFigure>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+                        </Canvas>
+
+                        <TextBlock Text="Preparing questions..." 
+                   FontSize="28" 
+                   Foreground="#FF2C4019" 
+                   HorizontalAlignment="Center" 
+                   FontWeight="Bold"
+                   Margin="10"/>
+
+                        <StackPanel.Triggers>
+                            <EventTrigger RoutedEvent="StackPanel.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandTop" 
+                            Storyboard.TargetProperty="Height"
+                            From="120" To="30" 
+                            Duration="0:0:3" 
+                            RepeatBehavior="Forever" />
+
+                                        
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandBottom" 
+                            Storyboard.TargetProperty="Height"
+                            From="30" To="120" 
+                            Duration="0:0:3" 
+                            RepeatBehavior="Forever" />
+
+                                   
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandStream" 
+                            Storyboard.TargetProperty="Height"
+                            From="10" To="30" 
+                            Duration="0:0:0.5" 
+                            AutoReverse="True"
+                            RepeatBehavior="Forever" />
+
+                                       
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandParticle1" 
+                            Storyboard.TargetProperty="(Canvas.Top)"
+                            From="160" To="250" 
+                            Duration="0:0:1.2" 
+                            RepeatBehavior="Forever" />
+
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandParticle2" 
+                            Storyboard.TargetProperty="(Canvas.Top)"
+                            From="150" To="240" 
+                            Duration="0:0:0.9" 
+                            RepeatBehavior="Forever" />
+
+                                        <DoubleAnimation 
+                            Storyboard.TargetName="sandParticle3" 
+                            Storyboard.TargetProperty="(Canvas.Top)"
+                            From="170" To="260" 
+                            Duration="0:0:1.5" 
+                            RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </StackPanel.Triggers>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>
