@@ -12,7 +12,7 @@ namespace Quiz.ViewModels
 {
     public class QuizSolverViewModel : ViewModelBase
     {
-        private string timeLeft = "30,00";
+        public string timeLeft = "30,00";
         public string TimeLeft
         {
             get => timeLeft;
@@ -160,7 +160,7 @@ namespace Quiz.ViewModels
         );
 
 
-        private void EndQuiz()
+        public void EndQuiz()
         {
             if (_timer != null)
             {
@@ -203,7 +203,9 @@ namespace Quiz.ViewModels
                 }
             }
 
+           
             MessageBox.Show($"Quiz has ended!\nYour result: {Points} points.", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            
 
             RaiseAllCommandsCanExecuteChanged();
 
@@ -233,7 +235,7 @@ namespace Quiz.ViewModels
         );
 
 
-        private void ResetQuiz()
+        public void ResetQuiz()
         {
             if (_timer != null)
             {

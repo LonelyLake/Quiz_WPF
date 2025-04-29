@@ -22,6 +22,7 @@ namespace Quiz.ViewModels
         }
 
         public ICommand NavigateQuizGeneratorCommand { get; }
+
         public ICommand NavigateQuizSolverCommand { get; }
 
         public MainViewModel(NavigationService navigationService)
@@ -30,8 +31,8 @@ namespace Quiz.ViewModels
             _navigationService.SetNavigator(vm => CurrentViewModel = vm);
 
             ViewModelBase qgvm = new QuizGeneratorViewModel();
-            ViewModelBase qsvm = new QuizSolverViewModel();
-
+            ViewModelBase qsvm = new QuizSolverViewModel();        
+            
             NavigateQuizGeneratorCommand = new RelayCommand(_ => _navigationService.NavigateTo(qgvm), _ => true);
             NavigateQuizSolverCommand = new RelayCommand(_ => _navigationService.NavigateTo(qsvm), _ => true);
 
