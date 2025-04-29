@@ -9,7 +9,7 @@ namespace Quiz.Model
 {
     public class Quiz
     {
-        // Test
+        // Test 
         private string title;
         public QuestionCollection Questions { get; set; } = new QuestionCollection();
         public string Title
