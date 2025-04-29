@@ -69,9 +69,8 @@ namespace Quiz.ViewModels
             }
         }
 
-        // ==== Komendy ====
 
-        private ICommand loadQuizCommand;
+        private ICommand loadQuizCommand = null;
         public ICommand LoadQuizCommand => loadQuizCommand ??= new RelayCommand(
             p =>
             {
@@ -83,16 +82,16 @@ namespace Quiz.ViewModels
                     RaiseAllCommandsCanExecuteChanged();
                 }
             },
-            p => !IsQuizLoaded // Load aktywny tylko przed załadowaniem
+            p => !IsQuizLoaded 
         );
 
-        private ICommand startTimerCommand;
+        private ICommand startTimerCommand = null;
         public ICommand StartTimerCommand => startTimerCommand ??= new RelayCommand(
     p =>
     {
         if (loadedQuiz == null) return;
 
-        DisplayedQuestions.Clear(); // Czyścimy pytania przed startem
+        DisplayedQuestions.Clear(); 
 
         foreach (var question in loadedQuiz.Questions)
         {
@@ -110,7 +109,6 @@ namespace Quiz.ViewModels
             DisplayedQuestions.Add(newQuestion);
         }
 
-        // ===> Tutaj odświeżamy IsQuizReady
         OnPropertyChanged(nameof(IsQuizReady));
 
 
@@ -133,7 +131,7 @@ namespace Quiz.ViewModels
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     TimeLeft = "0,00";
-                    EndQuiz(); // Automatyczne zakończenie quizu
+                    EndQuiz(); 
                 });
 
                 return;
@@ -158,10 +156,9 @@ namespace Quiz.ViewModels
             {
                 EndQuiz();
             },
-            p => IsQuizStarted && !IsQuizEnded // End aktywny tylko w czasie quizu
+            p => IsQuizStarted && !IsQuizEnded 
         );
 
-        // ==== Metody pomocnicze ====
 
         private void EndQuiz()
         {
@@ -181,25 +178,22 @@ namespace Quiz.ViewModels
             {
                 foreach (var answer in question.Answers)
                 {
-                    // Blokujemy możliwość zmiany odpowiedzi
                     answer.IsEnabled = false;
 
-                    // Ustawiamy kolory odpowiedzi
                     if (answer.IsCorrect)
                     {
-                        answer.BackgroundColor = "LightGreen"; // poprawne odpowiedzi na zielono
+                        answer.BackgroundColor = "LightGreen";
                     }
                     else if (answer.IsSelected && !answer.IsCorrect)
                     {
-                        answer.BackgroundColor = "LightCoral"; // źle zaznaczone odpowiedzi na czerwono
+                        answer.BackgroundColor = "LightCoral";
                     }
                     else
                     {
-                        answer.BackgroundColor = "Transparent"; // reszta bez koloru
+                        answer.BackgroundColor = "Transparent"; 
                     }
                 }
 
-                // Liczenie punktów
                 var selected = question.Answers.Where(a => a.IsSelected).ToList();
                 var correct = question.Answers.Where(a => a.IsCorrect).ToList();
 
@@ -213,7 +207,6 @@ namespace Quiz.ViewModels
 
             RaiseAllCommandsCanExecuteChanged();
 
-            // ===> Tutaj odświeżamy IsQuizReady
             OnPropertyChanged(nameof(IsQuizReady));
 
         }
@@ -236,7 +229,7 @@ namespace Quiz.ViewModels
             {
                 ResetQuiz();
             },
-            p => true // <-- ZAWSZE aktywny!
+            p => true
         );
 
 
@@ -262,7 +255,5 @@ namespace Quiz.ViewModels
             OnPropertyChanged(nameof(IsQuizReady));
             RaiseAllCommandsCanExecuteChanged();
         }
-
-
     }
 }
