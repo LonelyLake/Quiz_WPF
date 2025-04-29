@@ -255,10 +255,14 @@ namespace Quiz.ViewModels
             IsQuizStarted = false;
             IsQuizEnded = false;
 
+            TimeLeft = "30,00";
+            millisecondsLeft = 30_000;
+
             OnPropertyChanged(nameof(IsQuizLoaded));
             OnPropertyChanged(nameof(IsQuizReady));
             RaiseAllCommandsCanExecuteChanged();
         }
+
 
     }
 }

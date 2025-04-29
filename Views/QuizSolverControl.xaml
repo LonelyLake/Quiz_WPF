@@ -297,7 +297,7 @@
                    FontWeight="Bold" FontSize="60" Margin="0,10,0,10"/>
                 <Separator Margin="40,0,40,0" Background="#FF2C4019"/>
 
-                <!-- ItemsControl wewnątrz poprawnie -->
+                
                 <ItemsControl ItemsSource="{Binding DisplayedQuestions}" Visibility="{Binding IsQuizReady, Converter={StaticResource BoolToVisibility}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -319,14 +319,14 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Tekst "Your quiz will appear here" pokazuje się, kiedy nie ma pytań -->
+                
                 <TextBlock Text="Your quiz will appear here after start"
                    Visibility="{Binding IsQuizReady, Converter={StaticResource InverseBoolToVisibility}}"
                    Foreground="#FF2C4019"
                    HorizontalAlignment="Center"
                    FontSize="24"
                    FontWeight="Bold"
-                   Margin="20"/>
+                   Margin="20,40,20,20"/>
                 <Separator Margin="40,30,40,20" Background="#FF2C4019"/>
 
                 <Grid Visibility="{Binding IsQuizReady, Converter={StaticResource InverseBoolToVisibility}}"
@@ -340,7 +340,6 @@
                    Margin="20"/>
 
                         <Canvas Height="350" Width="250" HorizontalAlignment="Center">
-                            <!-- Tło klepsydry -->
                             <Path Fill="#FF446028" Opacity="0.4">
                                 <Path.Data>
                                     <PathGeometry>
@@ -356,19 +355,19 @@
                                 </Path.Data>
                             </Path>
 
-                            <!-- Górna część piasku - statyczna, tylko animacja wysokości -->
+                           
                             <Rectangle x:Name="sandTop" Fill="#FF98AF85" Width="150" Height="120" 
                        Canvas.Left="50" Canvas.Top="45" />
 
-                            <!-- Dolna część piasku - statyczna, tylko animacja wysokości -->
+                            
                             <Rectangle x:Name="sandBottom" Fill="#FF98AF85" Width="150" Height="30" 
                        Canvas.Left="50" Canvas.Top="205" />
 
-                            <!-- Strumień piasku -->
+                            
                             <Rectangle x:Name="sandStream" Fill="#FF98AF85" Width="8" Height="20" 
                        Canvas.Left="121" Canvas.Top="165" />
 
-                            <!-- Cząsteczki piasku - używamy Canvas.Top zamiast Margin.Top -->
+                            
                             <Ellipse x:Name="sandParticle1" Fill="#FF98AF85" Width="6" Height="6" 
                      Canvas.Left="118" Canvas.Top="160" />
                             <Ellipse x:Name="sandParticle2" Fill="#FF98AF85" Width="5" Height="5" 
@@ -376,7 +375,7 @@
                             <Ellipse x:Name="sandParticle3" Fill="#FF98AF85" Width="7" Height="7" 
                      Canvas.Left="110" Canvas.Top="170" />
 
-                            <!-- Obrys klepsydry -->
+                            
                             <Path Stroke="#FF2C4019" StrokeThickness="3" Fill="Transparent">
                                 <Path.Data>
                                     <PathGeometry>
@@ -404,7 +403,7 @@
                             <EventTrigger RoutedEvent="StackPanel.Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <!-- Animacja topniejącego piasku w górnej części -->
+                                        
                                         <DoubleAnimation 
                             Storyboard.TargetName="sandTop" 
                             Storyboard.TargetProperty="Height"
@@ -412,7 +411,7 @@
                             Duration="0:0:3" 
                             RepeatBehavior="Forever" />
 
-                                        <!-- Animacja rosnącego piasku w dolnej części -->
+                                        
                                         <DoubleAnimation 
                             Storyboard.TargetName="sandBottom" 
                             Storyboard.TargetProperty="Height"
@@ -420,7 +419,7 @@
                             Duration="0:0:3" 
                             RepeatBehavior="Forever" />
 
-                                        <!-- Animacja strumienia piasku -->
+                                   
                                         <DoubleAnimation 
                             Storyboard.TargetName="sandStream" 
                             Storyboard.TargetProperty="Height"
@@ -429,7 +428,7 @@
                             AutoReverse="True"
                             RepeatBehavior="Forever" />
 
-                                        <!-- Animacja spadających cząsteczek piasku - używamy Canvas.Top -->
+                                       
                                         <DoubleAnimation 
                             Storyboard.TargetName="sandParticle1" 
                             Storyboard.TargetProperty="(Canvas.Top)"
